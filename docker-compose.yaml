@@ -1,0 +1,31 @@
+services:
+  server:
+    build:
+      context: ./server
+      dockerfile: dockerfile.local
+    pull_policy: never
+    ports:
+      - 3000:3000
+    volumes:
+      - ./server:/app
+  db:
+    image: postgres
+    container_name: postgres-dev
+    environment:
+      - POSTGRES_DB=ecommerce-api
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql
+  adminer:
+    image: adminer
+    restart: always    
+    depends_on:
+      - db
+    ports:
+      - 8080:8080
+
+volumes:
+  postgres_data:
