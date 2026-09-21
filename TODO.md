@@ -16,6 +16,10 @@ Here is a rough list of requirements for this project:
 
 ## Todo
 
+### General
+
+- [✓] Create docker-compose for PostgreSQL, Adminer and Node.js.
+
 ### Database
 - [ ] Create database diagram on dbdiagram.io.
 - [ ] Model tables using Prisma.
