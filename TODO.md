@@ -18,7 +18,7 @@ Here is a rough list of requirements for this project:
 
 ### General
 
-- [✓] Create docker-compose for PostgreSQL, Adminer and Node.js.
+- [x] Create docker-compose for PostgreSQL, Adminer and Node.js.
 
 ### Database
 - [ ] Create database diagram on dbdiagram.io.
@@ -27,7 +27,7 @@ Here is a rough list of requirements for this project:
 
 ### Server
 #### Config
-- [✓] Create basic project configuration with TypeScript and Express.
+- [x] Create basic project configuration with TypeScript and Express.
 - [ ] Add prisma to the project.
 
 #### Login
