@@ -12,5 +12,9 @@ export default {
   },
   moduleNameMapper: {
     "^@/(.*)\\.js$": "<rootDir>/src/$1",
+    "^@root/(.*)\\.js$": "<rootDir>/$1",
   },
+  clearMocks: true,
+  preset: "ts-jest",
+  setupFilesAfterEnv: ["<rootDir>/src/config/prismaMock.ts"],
 };

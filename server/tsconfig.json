@@ -7,6 +7,9 @@
     "paths": {
       "@/*": [
         "./src/*"
+      ],
+      "@root/*": [
+        "./*"
       ]
     },
 
@@ -15,7 +18,7 @@
     "module": "esnext",
     "target": "esnext",
     "lib": ["esnext"],
-    "types": ["node", "jest", "jsonwebtoken"],
+    "types": ["node", "jest"],
 
     // Other Outputs
     "sourceMap": true,
