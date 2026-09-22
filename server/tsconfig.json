@@ -12,10 +12,10 @@
 
     // Environment Settings
     // See also https://aka.ms/tsconfig/module
-    "module": "nodenext",
+    "module": "esnext",
     "target": "esnext",
     "lib": ["esnext"],
-    "types": ["node"],
+    "types": ["node", "jest", "jsonwebtoken"],
 
     // Other Outputs
     "sourceMap": true,
