@@ -13,13 +13,13 @@ enum Roles {
 }
 
 model User {
-  Id             Int      @id @default(autoincrement()) @map("id")
-  Username       String   @unique @map("username")
-  Email          String   @unique @map("email")
-  PasswordHash   String   @map("password_hash")
-  ConfirmedEmail Boolean  @default(false) @map("confirmed_email")
-  Role           Roles    @default(USER) @map("role")
-  IsActive       Boolean  @default(true) @map("is_active")
-  UpdatedAt      DateTime @updatedAt @map("updated_at")
-  CreatedAt      DateTime @default(now()) @map("created_at")
+  id             Int      @id @default(autoincrement()) @map("id")
+  username       String   @unique @map("username")
+  email          String   @unique @map("email")
+  passwordHash   String   @map("password_hash")
+  confirmedEmail Boolean  @default(false) @map("confirmed_email")
+  role           Roles    @default(USER) @map("role")
+  isActive       Boolean  @default(true) @map("is_active")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+  createdAt      DateTime @default(now()) @map("created_at")
 }
