@@ -3,7 +3,7 @@ import express, {type Request, type Response} from 'express';
 import cookieParser from 'cookie-parser';
 import logger from 'morgan';
 
-import apiV1Router from '@/routes/apiV1';
+import apiV1Router from '@/routes/apiV1.js';
 
 export const app = express();
 

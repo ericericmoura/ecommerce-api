@@ -21,14 +21,15 @@ Here is a rough list of requirements for this project:
 - [x] Create docker-compose for PostgreSQL, Adminer and Node.js.
 
 ### Database
-- [ ] Create database diagram on dbdiagram.io.
-- [ ] Model tables using Prisma.
-- [ ] Run first database migration
+- [ ] Model database diagram on dbdiagram.io.
+    - [x] Model user table
+- [ ] Create tables in the database using Prisma.
+    - [x] Create user table
 
 ### Server
 #### Config
 - [x] Create basic project configuration with TypeScript and Express.
-- [ ] Add prisma to the project.
+- [x] Add prisma to the project.
 
 #### Login
 - [ ] Write unit tests for login functionality (generating token, controller functions, etc.)
