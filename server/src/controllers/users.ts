@@ -46,7 +46,15 @@ export const registerController = async (
     
         const token = generateToken({id: user.id, role: user.role}, env.LOGIN_TOKEN_EXPIRATION);
     
-        res.status(201).json({ data: user as UserDto, token });
+        const userDTO: UserDto = {
+            confirmedEmail: user.confirmedEmail,
+            email: user.email,
+            isActive: user.isActive,
+            role: user.role,
+            username: user.username
+        }
+
+        res.status(201).json({ data: userDTO, token });
     } catch (error) {
         console.log(`error: ${error}`);
         return next(createHttpError(500, "Error: " + error));
