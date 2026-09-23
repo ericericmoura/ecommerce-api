@@ -99,6 +99,23 @@ describe("Register User", () => {
         expect(res.statusCode).toBe(201);
     })
 
+    test("does not return password hash or id in response", async () => {
+        mockCreateResolvedValue();
+
+        const req = createRegisterRequest();
+
+        await registerController(req, res, next);
+
+        expect(prismaMock.user.create).toHaveBeenCalled();
+
+        const data = res._getJSONData().data;
+        expect(data).toBeDefined();
+        
+        expect(data).not.toHaveProperty("passwordHash");
+        expect(data).not.toHaveProperty("id");
+
+        expect(res.statusCode).toBe(201);
+    });
 
     // TEST HELPERS
     const mockCreateResolvedValue = (body: RegisterBody = {}) => {
