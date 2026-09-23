@@ -1,20 +1,22 @@
 import { registerController } from "@/controllers/users.js";
 import { prismaMock } from "@/config/prismaMock.js";
 
-import httpMocks, { createResponse } from "node-mocks-http"
+import httpMocks from "node-mocks-http"
 import { Roles } from "@root/prisma/generated/prisma/enums.js";
-import { create } from "domain";
+import bcrypt from "bcrypt"
+import jwt from "jsonwebtoken";
+import env from "@/config/env.js"
+import { verifyToken } from "@/utils/verifyToken";
 
-interface RegisterBody 
-{
-    email   ?: string
+interface RegisterBody {
+    email?: string
     username?: string
     password?: string
 }
 
 describe("Register User", () => {
     var next = jest.fn();
-    var res  = httpMocks.createResponse();
+    var res = httpMocks.createResponse();
 
     beforeEach(() => {
         jest.clearAllMocks();
@@ -22,10 +24,10 @@ describe("Register User", () => {
     })
 
     test("rejects a request with invalid or missing fields", async () => {
-        const req = createRegisterRequest({email: "321", username: ""});
+        const req = createRegisterRequest({ email: "321", username: "" });
 
         await registerController(req, res, next);
-        
+
         expectRejection(422);
     })
 
@@ -38,8 +40,8 @@ describe("Register User", () => {
     })
 
     test("rejects a request with an already existing e-mail", async () => {
-        mockFindUser({email: "testuser@test.com"});
-        
+        mockFindUser({ email: "testuser@test.com" });
+
         const req = createRegisterRequest({ email: "testuser@test.com" });
 
         await registerController(req, res, next);
@@ -48,7 +50,7 @@ describe("Register User", () => {
     })
 
     test("rejects a request with an already existing username", async () => {
-        mockFindUser({username: "testuser"});
+        mockFindUser({ username: "testuser" });
 
         const req = createRegisterRequest({ username: "testuser" });
 
@@ -57,10 +59,59 @@ describe("Register User", () => {
         expectRejection();
     })
 
-    test.todo("creates a new user on success")
-    test.todo("returns a valid JWT token on success")
+    test("creates a new user on success", async () => {
+        const req = createRegisterRequest({
+            email: "testuser@test.com",
+            username: "testuser123",
+        });
 
-    
+        await registerController(req, res, next);
+
+        expect(prismaMock.user.create).toHaveBeenCalledWith(expect.objectContaining({
+            data: expect.objectContaining({
+                email: "testuser@test.com",
+                username: "testuser123",
+            })
+        }));        
+
+        expect(res.status).toHaveBeenCalledWith(201);
+    })
+
+    test("correctly hashes password", async () => {
+        const password = "@MyStrongPsw123";
+
+        const req = createRegisterRequest({ password });
+
+        await registerController(req, res, next);
+
+        const createCall = prismaMock.user.create.mock.calls[0]?.[0];
+        expect(createCall).toBeDefined();
+
+        const passwordHash = createCall?.data.passwordHash;
+        expect(passwordHash).toBeDefined();
+
+        expect(passwordHash).not.toBe(password);
+        
+        expect(await bcrypt.compare(password, passwordHash as string)).toBe(true);
+
+        expect(res.status).toHaveBeenCalledWith(201);
+    })
+
+    test("returns a valid JWT token on success", async () => {
+        const req = createRegisterRequest();
+
+        await registerController(req, res, next);
+
+        expect(prismaMock.user.create).toHaveBeenCalled();
+
+        const token = (res.json as jest.Mock).mock.calls[0]?.[0].token;
+        expect(token).toBeDefined();
+
+        expect(verifyToken(token)).not.toThrow();
+        expect(res.status).toHaveBeenCalledWith(201);
+    })
+
+
     // TEST HELPERS
     const mockFindUser = (body: RegisterBody) => {
         prismaMock.user.findUnique.mockResolvedValueOnce({
@@ -81,7 +132,7 @@ describe("Register User", () => {
         expect(prismaMock.user.create).not.toHaveBeenCalled()
     }
 
-    const createRegisterRequest = (body: RegisterBody) => {
+    const createRegisterRequest = (body: RegisterBody = {}) => {
         return httpMocks.createRequest({
             method: "POST",
             baseUrl: "/register",
