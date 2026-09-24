@@ -41,5 +41,5 @@ Here is a rough list of requirements for this project:
 #### Sign-up
 - [x] Write unit tests for sign-up functionality (generating token, controller functions, etc.)
 - [x] Implement the sign-up functionality
-- [ ] Write integration tests for sign-up API
-- [ ] Implement the sign-up API
+- [x] Write integration tests for sign-up API
+- [x] Implement the sign-up API
