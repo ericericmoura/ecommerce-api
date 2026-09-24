@@ -1,9 +1,8 @@
 import express from 'express';
+import { registerController } from '@/controllers/users.js';
+
 var router = express.Router();
 
-/* GET users listing. */
-router.get('/', function(req, res, next) {
-  res.send('respond with a resource');
-});
+router.post("/register", registerController);
 
 export default router;
