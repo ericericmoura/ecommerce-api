@@ -1,23 +1,14 @@
 import bcrypt from "bcrypt"
 import httpMocks from "node-mocks-http"
 
-import { Roles } from "@root/prisma/generated/prisma/enums.js";
 import { verifyToken } from "@/utils/verifyToken.js";
 import { registerController } from "@/controllers/users.js";
 import { prismaMock } from "@/config/prismaMock.js";
-
-interface RegisterBody {
-    email?: string
-    username?: string
-    password?: string
-}
+import { mockCreateUser, mockFindUser, testEmail, testUsername, type RegisterBodyOptional } from "@root/tests/mocks/userMocks.js";
 
 describe("Register User", () => {
     var next = jest.fn();
     var res = httpMocks.createResponse();
-
-    var testEmail = "testuser@test.com";
-    var testUsername = "testuser1";
 
     beforeEach(() => {
         jest.clearAllMocks();
@@ -45,7 +36,7 @@ describe("Register User", () => {
     })
 
     test("creates a new user on success", async () => {
-        mockCreateResolvedValue();
+        mockCreateUser();
 
         const req = createRegisterRequest();
 
@@ -62,7 +53,7 @@ describe("Register User", () => {
     })
 
     test("correctly hashes password", async () => {
-        mockCreateResolvedValue();
+        mockCreateUser();
 
         const password = "@MyStrongPsw123";
 
@@ -84,7 +75,7 @@ describe("Register User", () => {
     })
 
     test("returns a valid JWT token on success", async () => {
-        mockCreateResolvedValue();
+        mockCreateUser();
 
         const req = createRegisterRequest();
 
@@ -100,7 +91,7 @@ describe("Register User", () => {
     })
 
     test("does not return password hash or id in response", async () => {
-        mockCreateResolvedValue();
+        mockCreateUser();
 
         const req = createRegisterRequest();
 
@@ -118,40 +109,13 @@ describe("Register User", () => {
     });
 
     // TEST HELPERS
-    const mockCreateResolvedValue = (body: RegisterBody = {}) => {
-        prismaMock.user.create.mockResolvedValue({
-            id: 1,
-            email: body.email ?? testEmail,
-            username: body.username ?? testUsername,
-            passwordHash: "@MyStrongPassword123",
-            isActive: true,
-            role: Roles.USER,
-            confirmedEmail: true,
-            createdAt: new Date(),
-            updatedAt: new Date()
-        })
-    }
-
-    const mockFindUser = (body: RegisterBody) => {
-        prismaMock.user.findFirst.mockResolvedValueOnce({
-            id: 1,
-            email: body.email ?? testEmail,
-            username: body.username ?? testUsername,
-            passwordHash: "@MyStrongPassword123",
-            isActive: true,
-            role: Roles.USER,
-            confirmedEmail: true,
-            createdAt: new Date(),
-            updatedAt: new Date()
-        });
-    }
 
     const expectRejection = (statusCode = 400) => {
         expect(next).toHaveBeenCalledWith(expect.objectContaining({ statusCode }));
         expect(prismaMock.user.create).not.toHaveBeenCalled()
     }
 
-    const createRegisterRequest = (body: RegisterBody = {}) => {
+    const createRegisterRequest = (body: RegisterBodyOptional = {}) => {
         return httpMocks.createRequest({
             method: "POST",
             baseUrl: "/register",
