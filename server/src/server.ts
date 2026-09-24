@@ -2,8 +2,10 @@ import createHttpError, { type HttpError } from 'http-errors';
 import express, {type Request, type Response} from 'express';
 import cookieParser from 'cookie-parser';
 import logger from 'morgan';
+import "express-async-errors"
 
 import apiV1Router from '@/routes/apiV1.js';
+import "@/middlewares/zodErrorHandler.js"
 
 export const app = express();
 

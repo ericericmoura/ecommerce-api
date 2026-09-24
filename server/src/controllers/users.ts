@@ -7,7 +7,7 @@ import type { Roles } from "@root/prisma/generated/prisma/enums.js";
 import { generateToken } from "@/utils/generateToken.js";
 import env from "@/config/env.js"
 
-interface RegisterBody {
+export interface RegisterBody {
     email: string
     username: string
     password: string
@@ -36,27 +36,22 @@ export const registerController = async (
 
     const salt = await bcrypt.genSalt();
     const passwordHash = await bcrypt.hash(password, salt);
-    
-    try {
-        const user = await prisma.user.create({data: {
-            email,
-            passwordHash,
-            username
-        }})    
-    
-        const token = generateToken({id: user.id, role: user.role}, env.LOGIN_TOKEN_EXPIRATION);
-    
-        const userDTO: UserDto = {
-            confirmedEmail: user.confirmedEmail,
-            email: user.email,
-            isActive: user.isActive,
-            role: user.role,
-            username: user.username
-        }
+        
+    const user = await prisma.user.create({data: {
+        email,
+        passwordHash,
+        username
+    }})    
 
-        res.status(201).json({ data: userDTO, token });
-    } catch (error) {
-        console.log(`error: ${error}`);
-        return next(createHttpError(500, "Error: " + error));
+    const token = generateToken({id: user.id, role: user.role}, env.LOGIN_TOKEN_EXPIRATION);
+
+    const userDTO: UserDto = {
+        confirmedEmail: user.confirmedEmail,
+        email: user.email,
+        isActive: user.isActive,
+        role: user.role,
+        username: user.username
     }
+
+    res.status(201).json({ data: userDTO, token });
 }
