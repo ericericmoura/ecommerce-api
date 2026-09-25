@@ -30,7 +30,7 @@ Here is a rough list of requirements for this project:
 #### Config
 - [x] Create basic project configuration with TypeScript and Express.
 - [x] Add prisma to the project.
-- [ ] Enable HTTPS in the project (self-signing for development)
+- [x] Enable HTTPS in the project (self-signing certificate for development)
 
 #### Login
 - [ ] Write unit tests for login functionality (generating token, controller functions, etc.)
