@@ -6,10 +6,16 @@ import { prisma } from "@/config/database.js";
 import type { Roles } from "@root/prisma/generated/prisma/enums.js";
 import { generateToken } from "@/utils/generateToken.js";
 import env from "@/config/env.js"
+import { email } from "zod";
 
 export interface RegisterBody {
     email: string
     username: string
+    password: string
+}
+
+export interface LoginBody {
+    email: string
     password: string
 }
 
@@ -36,14 +42,16 @@ export const registerController = async (
 
     const salt = await bcrypt.genSalt();
     const passwordHash = await bcrypt.hash(password, salt);
-        
-    const user = await prisma.user.create({data: {
-        email,
-        passwordHash,
-        username
-    }})    
 
-    const token = generateToken({id: user.id, role: user.role}, env.LOGIN_TOKEN_EXPIRATION);
+    const user = await prisma.user.create({
+        data: {
+            email,
+            passwordHash,
+            username
+        }
+    })
+
+    const token = generateToken({ id: user.id, role: user.role }, env.LOGIN_TOKEN_EXPIRATION);
 
     const userDTO: UserDto = {
         confirmedEmail: user.confirmedEmail,
@@ -57,6 +65,34 @@ export const registerController = async (
 }
 
 export const loginController = async (
-    req: Request<{}, {}, RegisterBody>,
+    req: Request<{}, {}, LoginBody>,
     res: Response,
-    next: NextFunction) => {}
+    next: NextFunction) => {
+    const { email, password } = req.body;
+
+    const userExists = await prisma.user.findUnique({ where: { email } });
+
+    if (!userExists) {
+        return next(createHttpError(401, "Incorrect e-mail or password."));
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, userExists.passwordHash);
+    if (!isPasswordValid) {
+        return next(createHttpError(401, "Incorrect e-mail or password."));
+    }
+
+    const token = generateToken({
+        id: userExists.id,
+        role: userExists.role
+    }, env.LOGIN_TOKEN_EXPIRATION);
+
+    return res.status(200).json({
+        data: {
+            email,
+            username: userExists.username,
+            confirmedEmail: userExists.confirmedEmail,
+            isActive: userExists.isActive,
+        },
+        token,
+    })
+}
