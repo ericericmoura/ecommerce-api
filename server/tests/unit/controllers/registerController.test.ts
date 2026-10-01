@@ -4,7 +4,7 @@ import httpMocks from "node-mocks-http"
 import { verifyToken } from "@/utils/verifyToken.js";
 import { registerController } from "@/controllers/users.js";
 import { prismaMock } from "@/config/prismaMock.js";
-import { mockCreateUser, mockFindUser, testEmail, testUsername, type RegisterBodyOptional } from "@root/tests/mocks/userMocks.js";
+import { mockCreateUser, mockFindFirstUser, testEmail, testUsername, type RegisterBodyOptional } from "@root/tests/mocks/userMocks.js";
 
 describe("Register User", () => {
     var next = jest.fn();
@@ -16,7 +16,7 @@ describe("Register User", () => {
     })
 
     test("rejects a request with an already existing e-mail", async () => {
-        mockFindUser({ email: testEmail });
+        mockFindFirstUser({ email: testEmail });
 
         const req = createRegisterRequest({ email: testEmail });
 
@@ -26,7 +26,7 @@ describe("Register User", () => {
     })
 
     test("rejects a request with an already existing username", async () => {
-        mockFindUser({ username: testUsername });
+        mockFindFirstUser({ username: testUsername });
 
         const req = createRegisterRequest({ username: testUsername });
 
