@@ -1,7 +1,7 @@
 import request, { Test } from "supertest";
 import { app } from "@/server.js";
 import { verifyToken } from "@/utils/verifyToken.js";
-import { mockCreateUser } from "@root/tests/mocks/userMocks.js";
+import { mockCreateUser, mockFindUniqueUser, testEmail, testPassword } from "@root/tests/mocks/userMocks.js";
 
 describe("Users API", () => {
     describe("POST /register", () => {        
@@ -52,9 +52,27 @@ describe("Users API", () => {
     })
 
     describe("POST /login", () => {
-        test.todo("rejects missing body fields with 422");
-        test.todo("rejects invalid email format with 422");
-        test.todo("authenticates user and returns a token with status 200");
+        test("rejects missing body fields with 422", async () => {
+            await makeRequest(422, {email: testEmail});
+        });
+        
+        test("rejects invalid email format with 422", async () => {
+            await makeRequest(422, { email: "testemail.!com", password: testPassword });
+        });        
+
+        test("authenticates user and returns a token with status 200", async () => {
+            mockFindUniqueUser();
+
+            const res = await makeRequest(200, { email: testEmail, password: testPassword });
+
+            expect(res.body).toBeDefined();
+            expect(res.body).toHaveProperty("token");
+
+            var decoded;
+            expect(() => {decoded = verifyToken(res.body.token)}).not.toThrow();
+            expect(decoded).toHaveProperty("id");
+            expect(decoded).toHaveProperty("role");
+        });
 
         const makeRequest = (expectedCode: number, body: object): Test => {
             return request(app)
