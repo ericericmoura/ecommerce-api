@@ -33,9 +33,9 @@ Here is a rough list of requirements for this project:
 - [x] Enable HTTPS in the project (self-signing certificate for development)
 
 #### Login
-- [ ] Write unit tests for login functionality (generating token, controller functions, etc.)
-- [ ] Implement the login functionality
-- [ ] Write integration tests for login API
+- [x] Write unit tests for login functionality (generating token, controller functions, etc.)
+- [x] Implement the login functionality
+- [x] Write integration tests for login API
 - [ ] Implement the login API
 
 #### Sign-up
