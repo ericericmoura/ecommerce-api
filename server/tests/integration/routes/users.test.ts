@@ -50,4 +50,18 @@ describe("Users API", () => {
                 .expect("Content-Type", /json/);
         }
     })
+
+    describe("POST /login", () => {
+        test.todo("rejects missing body fields with 422");
+        test.todo("rejects invalid email format with 422");
+        test.todo("authenticates user and returns a token with status 200");
+
+        const makeRequest = (expectedCode: number, body: object): Test => {
+            return request(app)
+                .post("/api/v1/users/login")
+                .send(body)
+                .expect(expectedCode)
+                .expect("Content-Type", /json/);
+        }
+    });
 })
