@@ -22,6 +22,8 @@ model User {
   isActive       Boolean  @default(true) @map("is_active")
   updatedAt      DateTime @updatedAt @map("updated_at")
   createdAt      DateTime @default(now()) @map("created_at")
+
+  carts Cart[]
 }
 
 model Product {
@@ -33,4 +35,19 @@ model Product {
   isActive  Boolean  @default(true) @map("is_active")
   updatedAt DateTime @updatedAt @map("updated_at")
   createdAt DateTime @default(now()) @map("created_at")
+
+  carts Cart[]
+}
+
+model Cart {
+  id        Int      @id @default(autoincrement()) @map("id")
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+  productId Int
+  product   Product  @relation(fields: [productId], references: [id])
+  amount    Int      @default(1) @map("stock")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@unique([userId, productId])
 }
