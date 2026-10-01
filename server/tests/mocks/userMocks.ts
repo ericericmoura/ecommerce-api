@@ -26,14 +26,25 @@ export const mockCreateUser = (body: RegisterBodyOptional = {}) => {
     })
 }
 
-export const mockFindUser = (body: RegisterBodyOptional = {}) => {
-    if (body.password == undefined)
-    {
-        const salt = bcrypt.genSaltSync();
-        body.password = bcrypt.hashSync(testPassword, salt);
+export const mockFindFirstUser = (body: RegisterBodyOptional = {}) => {
+    prismaMock.user.findFirst.mockResolvedValueOnce(createMockUser(body));
+}
+
+export const mockFindUniqueUser = (body: RegisterBodyOptional = {}) => {
+    prismaMock.user.findUnique.mockResolvedValueOnce(createMockUser());
+}
+
+const getTestPasswordHash = () => {
+    const salt = bcrypt.genSaltSync();
+    return bcrypt.hashSync(testPassword, salt);
+}
+
+const createMockUser = (body: RegisterBodyOptional = {}) => {
+    if (body.password == undefined) {
+        body.password = getTestPasswordHash();
     }
 
-    prismaMock.user.findFirst.mockResolvedValueOnce({
+    return {
         id: 1,
         email: body.email ?? testEmail,
         username: body.username ?? testUsername,
@@ -43,5 +54,5 @@ export const mockFindUser = (body: RegisterBodyOptional = {}) => {
         confirmedEmail: true,
         createdAt: new Date(),
         updatedAt: new Date()
-    });
+    }
 }
