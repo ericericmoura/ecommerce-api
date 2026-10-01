@@ -55,3 +55,8 @@ export const registerController = async (
 
     res.status(201).json({ data: userDTO, token });
 }
+
+export const loginController = async (
+    req: Request<{}, {}, RegisterBody>,
+    res: Response,
+    next: NextFunction) => {}
