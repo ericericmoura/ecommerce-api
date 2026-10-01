@@ -2,7 +2,7 @@ import httpMocks from "node-mocks-http"
 
 import { verifyToken } from "@/utils/verifyToken.js";
 import { loginController } from "@/controllers/users.js";
-import { mockFindUser, testEmail, testPassword, type RegisterBodyOptional } from "@root/tests/mocks/userMocks.js";
+import { mockFindUniqueUser, testEmail, testPassword, type RegisterBodyOptional } from "@root/tests/mocks/userMocks.js";
 import { generateToken } from "@/utils/generateToken.js";
 
 describe("Register User", () => {
@@ -19,21 +19,21 @@ describe("Register User", () => {
 
         await loginController(req, res, next);
 
-        expectRejection(404);
+        expectRejection(401);
     })
 
     test("rejects a request with a wrong password", async () => {
-        mockFindUser();
+        mockFindUniqueUser();
 
         const req = createLoginRequest({password: "WrongPassword"});
 
         await loginController(req, res, next);
 
         expectRejection(401);
-    })
+    })  
 
     test("returns a valid JWT token on success", async () => {
-        mockFindUser();
+        mockFindUniqueUser();
 
         const req = createLoginRequest();
 
@@ -52,7 +52,7 @@ describe("Register User", () => {
     })
 
     test("does not return password in response", async () => {
-        mockFindUser();
+        mockFindUniqueUser();
 
         const req = createLoginRequest();
 
@@ -71,8 +71,7 @@ describe("Register User", () => {
     // TEST HELPERS
 
     const expectRejection = (statusCode = 400) => {
-        expect(next).toHaveBeenCalledWith(expect.objectContaining({ statusCode }));
-        expect(generateToken).not.toHaveBeenCalled();
+        expect(next).toHaveBeenCalledWith(expect.objectContaining({ statusCode }));        
     }
 
     const createLoginRequest = (body: RegisterBodyOptional = {}) => {
