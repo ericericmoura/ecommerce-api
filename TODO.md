@@ -23,8 +23,8 @@ Here is a rough list of requirements for this project:
 ### Database
 - [ ] Model database diagram on dbdiagram.io.
     - [x] Model user table
-    - [ ] Model product table
-    - [ ] Model cart table    
+    - [x] Model product table
+    - [x] Model cart table    
 - [ ] Create tables in the database using Prisma.
     - [x] Create user table
     - [ ] Create product table
