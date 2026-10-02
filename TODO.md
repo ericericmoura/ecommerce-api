@@ -21,14 +21,14 @@ Here is a rough list of requirements for this project:
 - [x] Create docker-compose for PostgreSQL, Adminer and Node.js.
 
 ### Database
-- [ ] Model database diagram on dbdiagram.io.
+- [x] Model database diagram on dbdiagram.io.
     - [x] Model user table
     - [x] Model product table
     - [x] Model cart table    
-- [ ] Create tables in the database using Prisma.
+- [x] Create tables in the database using Prisma.
     - [x] Create user table
-    - [ ] Create product table
-    - [ ] Create cart table
+    - [x] Create product table
+    - [x] Create cart table
 
 ### Server
 #### Config
@@ -55,7 +55,7 @@ Here is a rough list of requirements for this project:
 - [ ] Create products seeding to populate the database
 
 #### Cart
-- Adding products to the cart
+- [ ] Adding products to the cart
     - [ ] Write unit tests for the controller
     - [ ] Implement the controller
     - [ ] Write integration tests for the API
