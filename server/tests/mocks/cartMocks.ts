@@ -1,4 +1,4 @@
-import { prismaMock } from "@/config/prismaMock";
+import { prismaMock } from "@/config/prismaMock.js";
 
 export interface AddToCartBodyOptional {
     userId?: number
