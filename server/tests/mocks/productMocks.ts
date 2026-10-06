@@ -1,4 +1,4 @@
-import { prismaMock } from "@/config/prismaMock";
+import { prismaMock } from "@/config/prismaMock.js";
 import { Decimal } from "@prisma/client/runtime/client.js";
 
 export interface CreateProductBodyOptional {
