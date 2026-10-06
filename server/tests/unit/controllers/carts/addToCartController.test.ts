@@ -1,7 +1,7 @@
 import httpMocks from "node-mocks-http"
 
 import { prismaMock } from "@/config/prismaMock.js";
-import type { AddToCartBodyOptional } from "@root/tests/mocks/cartMocks.js";
+import { mockCreateCart, type AddToCartBodyOptional } from "@root/tests/mocks/cartMocks.js";
 import { addToCartController } from "@/controllers/carts.js";
 import { mockFindUniqueProduct } from "@root/tests/mocks/productMocks.js";
 import { mockFindUniqueUser } from "@root/tests/mocks/userMocks.js";
@@ -45,7 +45,7 @@ describe("Add Products to the cart", () => {
 
         const req = createAddToCartRequest();
 
-        mockCreatedCart();
+        mockCreateCart();
 
         await addToCartController(req, res, next);
 
@@ -64,7 +64,7 @@ describe("Add Products to the cart", () => {
 
         const req = createAddToCartRequest();
 
-        mockCreatedCart();
+        mockCreateCart();
 
         await addToCartController(req, res, next);
 
@@ -76,17 +76,6 @@ describe("Add Products to the cart", () => {
     });
 
     // TEST HELPERS
-
-    const mockCreatedCart = () => {
-        prismaMock.cart.create.mockResolvedValue({
-            id: 1,
-            productId: 1,
-            userId: 1,
-            amount: 5,
-            createdAt: new Date(),
-            updatedAt: new Date()
-        })
-    }
 
     const expectRejection = (statusCode = 400) => {
         expect(next).toHaveBeenCalledWith(expect.objectContaining({ statusCode }));
