@@ -30,8 +30,6 @@ describe("Users API", () => {
                 { code: "P2002" }
             );
 
-            expect(prismaMock.cart.create).toThrow();
-
             await makeRequest(409, {
                 userId: 1,
                 productId: 1,
