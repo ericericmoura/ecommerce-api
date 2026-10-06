@@ -55,8 +55,8 @@ Here is a rough list of requirements for this project:
 - [ ] Create products seeding to populate the database
 
 #### Cart
-- [ ] Adding products to the cart
+- [x] Adding products to the cart
     - [x] Write unit tests for the controller
     - [x] Implement the controller
-    - [ ] Write integration tests for the API
-    - [ ] Implement the API
+    - [x] Write integration tests for the API
+    - [x] Implement the API
