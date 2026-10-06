@@ -1,5 +1,5 @@
 import createHttpError, { type HttpError } from 'http-errors';
-import express, {type Request, type Response} from 'express';
+import express, {type NextFunction, type Request, type Response} from 'express';
 import cookieParser from 'cookie-parser';
 import logger from 'morgan';
 import "express-async-errors"
@@ -8,6 +8,7 @@ import fs from "fs";
 
 import apiV1Router from '@/routes/apiV1.js';
 import "@/middlewares/zodErrorHandler.js"
+import { globalErrorHandler } from '@/middlewares/globalErrorHandler.js';
 
 export const app = express();
 
@@ -26,13 +27,7 @@ app.use(function (req, res, next) {
 });
 
 // Global error handler
-app.use(function (err: HttpError, req: Request, res: Response) {
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
-
-  res.status(err.status || 500);
-  res.render('error');
-});
+app.use(globalErrorHandler);
 
 // HTTPS Configuration
 const privateKey = fs.readFileSync('certificate/server.key', 'utf8');
