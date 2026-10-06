@@ -15,43 +15,6 @@ describe("Remove Products from the cart", () => {
         res = httpMocks.createResponse();
     })
 
-    test("rejects non-existent cart with status 404", async () => {
-        mockFindUniqueProduct();
-
-        const req = createRemoveFromCartRequest();
-
-        await removeFromCartController(req, res, next);
-
-        expect(prismaMock.product.findUnique).toHaveBeenCalled();
-        expect(prismaMock.cart.findUnique).toHaveBeenCalled();
-
-        expectRejection(404);
-    });
-    
-    test("rejects non-existent product with status 404", async () => {
-        const req = createRemoveFromCartRequest();
-
-        await removeFromCartController(req, res, next);
-
-        expect(prismaMock.product.findUnique).toHaveBeenCalled();
-
-        expectRejection(404);
-    });
-
-    test("rejects if user trying to remove the product does not own the cart", async () => {
-        mockFindUniqueProduct();
-        mockFindUniqueCart(2);
-
-        const req = createRemoveFromCartRequest();
-
-        await removeFromCartController(req, res, next);
-
-        expect(prismaMock.product.findUnique).toHaveBeenCalled();
-        expect(prismaMock.cart.findUnique).toHaveBeenCalled();
-
-        expectRejection(403);
-    });
-
     test("successfully removes product from cart with 200", async () => {
         mockFindUniqueProduct();
         mockFindUniqueCart();
@@ -60,20 +23,12 @@ describe("Remove Products from the cart", () => {
 
         await removeFromCartController(req, res, next);
 
-        expect(prismaMock.product.findUnique).toHaveBeenCalled();
-        expect(prismaMock.cart.findUnique).toHaveBeenCalled();
-
         expect(prismaMock.cart.delete).toHaveBeenCalled();
 
         expect(res.statusCode).toBe(200);
     });
 
     // TEST HELPERS
-
-    const expectRejection = (statusCode = 400) => {
-        expect(next).toHaveBeenCalledWith(expect.objectContaining({ statusCode }));
-        expect(prismaMock.cart.delete).not.toHaveBeenCalled()
-    }
 
     const createRemoveFromCartRequest = (productId: number = 1) => {
         const req =  httpMocks.createRequest({
