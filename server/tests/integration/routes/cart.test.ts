@@ -4,6 +4,8 @@ import { mockFindUniqueUser } from "@root/tests/mocks/userMocks.js";
 import { mockFindUniqueProduct } from "@root/tests/mocks/productMocks.js";
 import { prismaMock } from "@/config/prismaMock.js";
 import { mockCreateCart } from "@root/tests/mocks/cartMocks.js";
+import { Roles } from "@root/prisma/generated/prisma/enums.js";
+import { generateToken } from "@/utils/generateToken.js";
 
 describe("Users API", () => {
     describe("POST /register", () => {
@@ -51,11 +53,15 @@ describe("Users API", () => {
         });
 
         const makeRequest = (expectedCode: number, body: object): Test => {
+            const payload = {id: 1, role: Roles.USER};
+            const token = generateToken(payload, "5m");
+
             return request(app)
                 .post("/api/v1/cart")
                 .send(body)
+                .auth(token, {type: "bearer"})
                 .expect(expectedCode)
-                .expect("Content-Type", /json/);
+                .expect("Content-Type", /json/);                
         }
     })
 })

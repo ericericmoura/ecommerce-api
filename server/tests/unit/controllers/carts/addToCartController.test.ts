@@ -5,6 +5,7 @@ import { mockCreateCart, type AddToCartBodyOptional } from "@root/tests/mocks/ca
 import { addToCartController } from "@/controllers/carts.js";
 import { mockFindUniqueProduct } from "@root/tests/mocks/productMocks.js";
 import { mockFindUniqueUser } from "@root/tests/mocks/userMocks.js";
+import { Roles } from "@root/prisma/generated/prisma/enums.js";
 
 describe("Add Products to the cart", () => {
     var next = jest.fn();
@@ -83,14 +84,15 @@ describe("Add Products to the cart", () => {
     }
 
     const createAddToCartRequest = (body: AddToCartBodyOptional = {}) => {
-        return httpMocks.createRequest({
+        const req = httpMocks.createRequest({
             method: "POST",
             baseUrl: "/cart",
             body: {
-                userId: body.userId ?? 1,
                 productId: body.productId ?? 1,
                 amount: body.amount ?? 5,
-            }
+            }            
         });
+        req.auth = {id: 1, role: Roles.USER};
+        return req;
     }
 })
