@@ -8,8 +8,8 @@ https://roadmap.sh/projects/ecommerce-api
 
 Here is a rough list of requirements for this project:
 - [x] Ability for users to sign up and log in.
-- [ ] Ability to add products to a cart.
-- [ ] Ability to remove products from a cart.
+- [x] Ability to add products to a cart.
+- [ ] Ability to remove products from a cart.  
 - [ ] Ability to view and search for products.
 - [ ] Ability for users to checkout and pay for products.
 - [ ] Admin panel to manage products (set prices, add new products, etc.)
@@ -60,3 +60,8 @@ Here is a rough list of requirements for this project:
     - [x] Implement the controller
     - [x] Write integration tests for the API
     - [x] Implement the API
+- [ ] Removing products from the cart
+    - [ ] Write unit tests for the controller
+    - [ ] Implement the controller
+    - [ ] Write integration tests for the API
+    - [ ] Implement the API
