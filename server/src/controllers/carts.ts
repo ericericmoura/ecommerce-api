@@ -14,7 +14,13 @@ export const addToCartController = async (
     res: Response,
     next: NextFunction
 ) => {
-    const {userId, productId, amount} = req.body;
+    const {productId, amount} = req.body;
+
+    const userId = req.auth?.id;
+    if (!userId)
+    {
+        return next(createHttpError(422, `User ID not provided.`));
+    }
 
     const userExists = await prisma.user.findUnique({where: {id: userId}});
     if (!userExists)
@@ -35,3 +41,9 @@ export const addToCartController = async (
 
     res.status(201).json({ data: { productId, userId, amount, createdAt: cart.createdAt}});
 }
+
+export const removeFromCartController = async(
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {};
