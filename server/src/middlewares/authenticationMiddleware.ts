@@ -2,7 +2,7 @@ import type { Request, Response, NextFunction } from "express";
 import createHttpError from "http-errors";
 import { verifyToken } from "@/utils/verifyToken.js";
 import { Roles } from "@root/prisma/generated/prisma/enums.js";
-import { prisma } from "@/config/database";
+import { prisma } from "@/config/database.js";
 
 export interface AuthPayload {
     id: number;
@@ -17,7 +17,7 @@ export const authenticate = (requiredRole: Roles = Roles.ADMIN) => {
         }
 
         const [scheme, token] = header.split(" ");
-        if (scheme !== "Bearer" || !token) {
+        if (!scheme || scheme.toLowerCase() !== "bearer" || !token) {
             return next(createHttpError(401, "Invalid uthorization format"));
         }
 
