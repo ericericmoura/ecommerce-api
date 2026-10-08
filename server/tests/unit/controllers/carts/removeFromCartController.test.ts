@@ -34,8 +34,8 @@ describe("Remove Products from the cart", () => {
         const req =  httpMocks.createRequest({
             method: "DELETE",
             baseUrl: "/cart",            
-            body: {
-                productId: productId,
+            params: {
+                productId,
             }
         });
         req.auth = {id: 1, role: Roles.USER};
