@@ -43,7 +43,7 @@ export const addToCartController = async (
 }
 
 export const removeFromCartController = async (
-    req: Request<{}, {}, { productId: number }>,
+    req: Request<{ productId: number }, {}, {}>,
     res: Response,
     next: NextFunction
 ) => {
@@ -52,7 +52,7 @@ export const removeFromCartController = async (
         return next(createHttpError(422, "Invalid user Id."));
     }
 
-    const { productId } = req.body;
+    const { productId } = req.params;
 
     await prisma.cart.delete({ where: { userId_productId: { userId, productId } } });
 
