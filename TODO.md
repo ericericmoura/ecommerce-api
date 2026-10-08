@@ -61,7 +61,7 @@ Here is a rough list of requirements for this project:
     - [x] Write integration tests for the API
     - [x] Implement the API
 - [ ] Removing products from the cart
-    - [ ] Write unit tests for the controller
-    - [ ] Implement the controller
+    - [x] Write unit tests for the controller
+    - [x] Implement the controller
     - [ ] Write integration tests for the API
     - [ ] Implement the API
