@@ -7,8 +7,8 @@ import { mockCreateCart } from "@root/tests/mocks/cartMocks.js";
 import { Roles } from "@root/prisma/generated/prisma/enums.js";
 import { generateToken } from "@/utils/generateToken.js";
 
-describe("Users API", () => {
-    describe("POST /register", () => {
+describe("Carts API", () => {
+    describe("POST /cart", () => {
         test("rejects missing body fields with 422", async () => {
             await makeRequest(422, {
                 userId: 1,
@@ -61,7 +61,22 @@ describe("Users API", () => {
                 .send(body)
                 .auth(token, {type: "bearer"})
                 .expect(expectedCode)
-                .expect("Content-Type", /json/);                
+                .expect("Content-Type", /json/);
+        }
+    })
+
+    describe("DELETE /register", () => {
+        test.todo("rejects invalid ids with 422");
+
+        const makeRequest = (expectedCode: number): Test => {
+            const payload = { id: 1, role: Roles.USER };
+            const token = generateToken(payload, "5m");
+
+            return request(app)
+                .delete(`/api/v1/cart/${1}`)
+                .auth(token, { type: "bearer" })
+                .expect(expectedCode)
+                .expect("Content-Type", /json/);
         }
     })
 })
