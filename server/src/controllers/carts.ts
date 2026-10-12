@@ -1,4 +1,5 @@
 import { prisma } from "@/config/database.js";
+import { IdSchema } from "@/schemas/general.js";
 
 import { type Request, type Response, type NextFunction } from "express"
 import createHttpError from "http-errors";
@@ -43,7 +44,7 @@ export const addToCartController = async (
 }
 
 export const removeFromCartController = async (
-    req: Request<{ productId: number }, {}, {}>,
+    req: Request<{ id: string }>,
     res: Response,
     next: NextFunction
 ) => {
@@ -52,9 +53,16 @@ export const removeFromCartController = async (
         return next(createHttpError(422, "Invalid user Id."));
     }
 
-    const { productId } = req.params;
+    const id = IdSchema.parse(req.params.id);
 
-    await prisma.cart.delete({ where: { userId_productId: { userId, productId } } });
+    const cartExists = await prisma.cart.findUnique({ where: { id } });
+    if (!cartExists) {
+        return next(createHttpError(404, "Cart not found."));
+    }
+    if (cartExists.userId !== userId) {
+        return next(createHttpError(403, "You don't have permission to delete this cart."));
+    }
+    await prisma.cart.delete({ where: { id } });
 
-    res.status(200).json({ message: "Cart successfully deleted." });
+    res.sendStatus(204);
 };
