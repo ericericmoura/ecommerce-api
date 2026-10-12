@@ -6,6 +6,19 @@ export interface AddToCartBodyOptional {
     amount?: number
 }
 
+export interface GetAllProductsQueryOptional {
+    name?: string,
+    tags?: string[],
+    minPrice?: number,
+    maxPrice?: number,
+    minStock?: number,
+    isActive?: boolean,    
+    orderByCreationDate?: string,
+
+    pageSize?: number
+    currentPage?: number
+}
+
 const createMockCart = (body: AddToCartBodyOptional = {}) => {
     return {
         id: 1,
