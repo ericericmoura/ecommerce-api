@@ -15,7 +15,7 @@ describe("Remove Products from the cart", () => {
         res = httpMocks.createResponse();
     })
 
-    test("successfully removes product from cart with 200", async () => {
+    test("successfully removes product from cart with 204", async () => {
         mockFindUniqueProduct();
         mockFindUniqueCart();
 
@@ -25,17 +25,17 @@ describe("Remove Products from the cart", () => {
 
         expect(prismaMock.cart.delete).toHaveBeenCalled();
 
-        expect(res.statusCode).toBe(200);
+        expect(res.statusCode).toBe(204);
     });
 
     // TEST HELPERS
 
-    const createRemoveFromCartRequest = (productId: number = 1) => {
+    const createRemoveFromCartRequest = (cartId: number = 1) => {
         const req =  httpMocks.createRequest({
             method: "DELETE",
             baseUrl: "/cart",            
             params: {
-                productId,
+                id: cartId,
             }
         });
         req.auth = {id: 1, role: Roles.USER};
