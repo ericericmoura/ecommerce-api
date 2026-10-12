@@ -3,20 +3,25 @@ import { app } from "@/server.js";
 import { mockFindUniqueUser } from "@root/tests/mocks/userMocks.js";
 import { mockFindUniqueProduct } from "@root/tests/mocks/productMocks.js";
 import { prismaMock } from "@/config/prismaMock.js";
-import { mockCreateCart } from "@root/tests/mocks/cartMocks.js";
+import { mockCreateCart, mockFindUniqueCart } from "@root/tests/mocks/cartMocks.js";
 import { Roles } from "@root/prisma/generated/prisma/enums.js";
 import { generateToken } from "@/utils/generateToken.js";
+import { Prisma } from "@root/prisma/generated/prisma/client.js";
 
 describe("Carts API", () => {
     describe("POST /cart", () => {
         test("rejects missing body fields with 422", async () => {
+            mockFindUniqueUser();
+
             await makeRequest(422, {
                 userId: 1,
-                amount: 10,                
+                amount: 10,
             });
         });
 
         test("rejects invalid ids with 422", async () => {
+            mockFindUniqueUser();
+
             await makeRequest(422, {
                 userId: 2.3,
                 productId: "invalidid",
@@ -26,10 +31,14 @@ describe("Carts API", () => {
 
         test("rejects same user adding same product twice with status 409", async () => {
             mockFindUniqueUser();
+            mockFindUniqueUser();
             mockFindUniqueProduct();
 
             prismaMock.cart.create.mockRejectedValueOnce(
-                { code: "P2002" }
+                new Prisma.PrismaClientKnownRequestError("Unique constraint failed", {
+                    code: "P2002",
+                    clientVersion: "x",
+                })
             );
 
             await makeRequest(409, {
@@ -40,6 +49,7 @@ describe("Carts API", () => {
         });
 
         test("adds products with 201", async () => {
+            mockFindUniqueUser();
             mockFindUniqueUser();
             mockFindUniqueProduct();
 
@@ -53,30 +63,57 @@ describe("Carts API", () => {
         });
 
         const makeRequest = (expectedCode: number, body: object): Test => {
-            const payload = {id: 1, role: Roles.USER};
+            const payload = { id: 1, role: Roles.USER };
             const token = generateToken(payload, "5m");
 
             return request(app)
                 .post("/api/v1/cart")
                 .send(body)
-                .auth(token, {type: "bearer"})
+                .auth(token, { type: "bearer" })
                 .expect(expectedCode)
                 .expect("Content-Type", /json/);
         }
     })
 
     describe("DELETE /register", () => {
-        test.todo("rejects invalid ids with 422");
+        test("rejects user that does not own the cart with 403", async () => {
+            mockFindUniqueUser();
+            mockFindUniqueCart(2, 1);
 
-        const makeRequest = (expectedCode: number): Test => {
+            await makeRequest(403);
+        });
+
+        test("rejects non-logged user with 401", async () => {
+            mockFindUniqueCart();
+
+            await makeRequest(401);
+        });
+
+        test("cart not found returns 404", async () => {
+            mockFindUniqueUser();
+
+            await makeRequest(404);
+        });
+
+        test("correctly deletes cart with 204", async () => {
+            mockFindUniqueUser();
+            mockFindUniqueCart();
+
+            await makeRequest(204);
+        });
+
+        const makeRequest = (expectedCode: number, cartId = 1): Test => {
             const payload = { id: 1, role: Roles.USER };
             const token = generateToken(payload, "5m");
 
-            return request(app)
-                .delete(`/api/v1/cart/${1}`)
+            const req = request(app)
+                .delete(`/api/v1/cart/${cartId}`)
                 .auth(token, { type: "bearer" })
                 .expect(expectedCode)
-                .expect("Content-Type", /json/);
+            if (expectedCode !== 204) {
+                req.expect("Content-Type", /json/);
+            }
+            return req;
         }
     })
 })
