@@ -1,5 +1,5 @@
 import request, { Test } from "supertest";
-import { app } from "@/server.js";
+import { app } from "@/app.js";
 import { mockFindUniqueUser } from "@root/tests/mocks/userMocks.js";
 import { mockFindUniqueProduct } from "@root/tests/mocks/productMocks.js";
 import { prismaMock } from "@/config/prismaMock.js";

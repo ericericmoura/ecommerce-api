@@ -1,5 +1,5 @@
 import request, { Test } from "supertest";
-import { app } from "@/server.js";
+import { app } from "@/app.js";
 import { verifyToken } from "@/utils/verifyToken.js";
 import { mockCreateUser, mockFindUniqueUser, testEmail, testPassword } from "@root/tests/mocks/userMocks.js";
 
