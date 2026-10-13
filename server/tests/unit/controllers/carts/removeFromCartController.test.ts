@@ -1,5 +1,6 @@
 import httpMocks from "node-mocks-http"
 
+import type { Request } from "express"
 import { prismaMock } from "@/config/prismaMock.js";
 import { mockFindUniqueCart } from "@root/tests/mocks/cartMocks.js";
 import { removeFromCartController } from "@/controllers/carts.js";
@@ -31,7 +32,7 @@ describe("Remove Products from the cart", () => {
     // TEST HELPERS
 
     const createRemoveFromCartRequest = (cartId: number = 1) => {
-        const req =  httpMocks.createRequest({
+        const req = httpMocks.createRequest <Request<{ id: string }>>({
             method: "DELETE",
             baseUrl: "/cart",            
             params: {
