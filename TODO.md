@@ -67,6 +67,6 @@ Here is a rough list of requirements for this project:
     - [x] Implement the API
 - [ ] View and search for products
     - [x] Write unit tests for the controller
-    - [ ] Implement the controller
+    - [x] Implement the controller
     - [ ] Write integration tests for the API
     - [ ] Implement the API
