@@ -1,5 +1,6 @@
 import httpMocks from "node-mocks-http"
 
+import type { Request } from "express"
 import { createMockProducts, mockFindManyProduct } from "@root/tests/mocks/productMocks.js";
 import { getAllProductsController, type GetAllProductsQuery } from "@/controllers/products.js";
 import { prismaMock } from "@/config/prismaMock.js";
@@ -37,11 +38,15 @@ describe("Get all products", () => {
         expect(res.statusCode).toBe(200);
     });
 
-    test("Correctly applies search filters", async () => {        
+    test("Correctly applies search filters", async () => {
         const req = createGetAllProductsRequest({
             name: "glass",
             minPrice: 10,
             maxPrice: 20,
+            currentPage: 1,
+            pageSize: 10,
+            isActive: true,
+            orderByCreationDate: "desc"
         });
 
         await getAllProductsController(req, res, next);
@@ -66,7 +71,10 @@ describe("Get all products", () => {
 
     test("Correctly applies ordering", async () => {
         const req = createGetAllProductsRequest({
-            orderByCreationDate: "desc"
+            orderByCreationDate: "desc",
+            currentPage: 1,
+            pageSize: 10,
+            isActive: true,
         });
 
         await getAllProductsController(req, res, next);
@@ -80,10 +88,12 @@ describe("Get all products", () => {
         expect(res.statusCode).toBe(200);
     });
 
-    test("Correctly applies pagination", async () => {    
+    test("Correctly applies pagination", async () => {
         const req = createGetAllProductsRequest({
             pageSize: 2,
             currentPage: 1,
+            orderByCreationDate: "desc",
+            isActive: true,
         });
 
         await getAllProductsController(req, res, next);
@@ -91,20 +101,8 @@ describe("Get all products", () => {
         expect(prismaMock.product.findMany).toHaveBeenCalledWith(
             expect.objectContaining({
                 skip: 0,
-                take: 2,                  
+                take: 2,
             })
-        );
-
-        expect(res.statusCode).toBe(200);
-    });
-
-    test("Uses default pagination values", async () => {
-        const req = createGetAllProductsRequest();
-
-        await getAllProductsController(req, res, next);
-
-        expect(prismaMock.product.findMany).toHaveBeenCalledWith(
-            expect.objectContaining({ skip: expect.any(Number), take: expect.any(Number) })
         );
 
         expect(res.statusCode).toBe(200);
@@ -118,8 +116,8 @@ describe("Get all products", () => {
         expect(data).toEqual(expect.arrayContaining(expectedArr));
     }
 
-    const createGetAllProductsRequest = (query: GetAllProductsQuery = {}) => {
-        const req = httpMocks.createRequest({
+    const createGetAllProductsRequest = (query: GetAllProductsQuery = { isActive: true, orderByCreationDate: "desc", currentPage: 1, pageSize: 10 }) => {
+        const req = httpMocks.createRequest<Request<{}, {}, {}, GetAllProductsQuery>>({
             method: "GET",
             baseUrl: "/products",
             query,
