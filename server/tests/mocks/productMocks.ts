@@ -9,19 +9,6 @@ export interface CreateProductBodyOptional {
     price?: Decimal,
 }
 
-export interface GetAllProductsQueryOptional {
-    name?: string,
-    tags?: string[],
-    minPrice?: number,
-    maxPrice?: number,
-    minStock?: number,
-    isActive?: boolean,
-    orderByCreationDate?: string,
-
-    pageSize?: number
-    currentPage?: number
-}
-
 export const mockFindUniqueProduct = (body: CreateProductBodyOptional = {}) => { 
     prismaMock.product.findUnique.mockResolvedValueOnce({
         id: 1,
