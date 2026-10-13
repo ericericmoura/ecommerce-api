@@ -9,10 +9,10 @@ export interface GetAllProductsQuery {
     minPrice?: number,
     maxPrice?: number,
     minStock?: number,
-    isActive?: boolean,
-    orderByCreationDate?: string,
-    pageSize?: number
-    currentPage?: number
+    isActive: boolean,
+    orderByCreationDate: "asc" | "desc",
+    pageSize: number
+    currentPage: number
 }
 
 export const getAllProductsController = async (
@@ -29,13 +29,11 @@ export const getAllProductsController = async (
         pageSize,
         currentPage } = req.query;
 
-    const take = pageSize === undefined ? 10 : Number(pageSize);
-    const skip = currentPage === undefined ? 0 : (Number(currentPage) - 1) * take;
-
-    const sort = orderByCreationDate as Prisma.SortOrder;
+    const take = pageSize;
+    const skip = (currentPage - 1) * take;
 
     const query: Prisma.ProductFindManyArgs = {
-        orderBy: { createdAt: orderByCreationDate === undefined ? "desc" : sort },
+        orderBy: { createdAt: orderByCreationDate },
         where: {
             price: {
                 gte: minPrice ?? 0,
@@ -50,7 +48,7 @@ export const getAllProductsController = async (
             stock: {
                 lte: minStock ?? 0,
             },
-            isActive: isActive ?? true,
+            isActive: isActive,
         },
         skip,
         take,
