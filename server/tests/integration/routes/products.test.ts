@@ -2,6 +2,7 @@ import request, { Test } from "supertest";
 import { app } from "@/app.js";
 import { createMockProducts, mockFindManyProduct } from "@root/tests/mocks/productMocks.js";
 import { Decimal } from "@prisma/client/runtime/client.js";
+import { prismaMock } from "@/config/prismaMock.js";
 
 describe("GET /", () => {
     test("correctly returns filtered products with 200", async () => {
@@ -44,6 +45,14 @@ describe("GET /", () => {
         ["currentPage lower than 1", { currentPage: 0 }],
     ],)("rejects %s with 422", async (_, query) => {
         await makeRequest(422, query);
+    })
+
+    test("applies default pagination", async () => {
+        await makeRequest(200, {});
+
+        expect(prismaMock.product.findMany).toHaveBeenCalledWith(
+            expect.objectContaining({ skip: expect.any(Number), take: expect.any(Number) })
+        );
     })
 
     const makeRequest = (expectedCode: number, query: object): Test => {
