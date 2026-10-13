@@ -3,7 +3,6 @@ import httpMocks from "node-mocks-http"
 import { verifyToken } from "@/utils/verifyToken.js";
 import { loginController } from "@/controllers/users.js";
 import { mockFindUniqueUser, testEmail, testPassword, type RegisterBodyOptional } from "@root/tests/mocks/userMocks.js";
-import { generateToken } from "@/utils/generateToken.js";
 
 describe("Register User", () => {
     var next = jest.fn();

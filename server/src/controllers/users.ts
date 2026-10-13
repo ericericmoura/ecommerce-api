@@ -6,7 +6,6 @@ import { prisma } from "@/config/database.js";
 import type { Roles } from "@root/prisma/generated/prisma/enums.js";
 import { generateToken } from "@/utils/generateToken.js";
 import env from "@/config/env.js"
-import { email } from "zod";
 
 export interface RegisterBody {
     email: string
