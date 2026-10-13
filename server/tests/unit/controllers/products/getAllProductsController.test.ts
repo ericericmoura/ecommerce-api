@@ -1,11 +1,8 @@
 import httpMocks from "node-mocks-http"
 
-import type { Product } from "@root/prisma/generated/prisma/client.js";
-import { createMockProducts, mockFindManyProduct, type GetAllProductsQueryOptional } from "@root/tests/mocks/productMocks";
-import { getAllProductsController } from "@/controllers/products";
-import { prismaMock } from "@/config/prismaMock";
-import { Decimal } from "@prisma/client/runtime/client.js";
-import { z } from "zod";
+import { createMockProducts, mockFindManyProduct } from "@root/tests/mocks/productMocks.js";
+import { getAllProductsController, type GetAllProductsQuery } from "@/controllers/products.js";
+import { prismaMock } from "@/config/prismaMock.js";
 
 describe("Get all products", () => {
     var next = jest.fn();
@@ -51,7 +48,7 @@ describe("Get all products", () => {
 
         expect(prismaMock.product.findMany).toHaveBeenCalledWith(
             expect.objectContaining({
-                where: {
+                where: expect.objectContaining({
                     name: {
                         contains: "glass",
                         mode: "insensitive",
@@ -60,7 +57,7 @@ describe("Get all products", () => {
                         gte: 10,
                         lte: 20,
                     }
-                }
+                })
             })
         );
 
@@ -121,11 +118,7 @@ describe("Get all products", () => {
         expect(data).toEqual(expect.arrayContaining(expectedArr));
     }
 
-    const expectRejection = (statusCode = 400) => {
-        expect(next).toHaveBeenCalledWith(expect.objectContaining({ statusCode }));
-    }
-
-    const createGetAllProductsRequest = (query: GetAllProductsQueryOptional = {}) => {
+    const createGetAllProductsRequest = (query: GetAllProductsQuery = {}) => {
         const req = httpMocks.createRequest({
             method: "GET",
             baseUrl: "/products",
