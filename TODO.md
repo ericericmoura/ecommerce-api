@@ -53,6 +53,11 @@ Here is a rough list of requirements for this project:
 
 #### Products
 - [ ] Create products seeding to populate the database
+- [x] View and search for products
+    - [x] Write unit tests for the controller
+    - [x] Implement the controller
+    - [x] Write integration tests for the API
+    - [x] Implement the API
 
 #### Cart
 - [x] Adding products to the cart
@@ -65,8 +70,10 @@ Here is a rough list of requirements for this project:
     - [x] Implement the controller
     - [x] Write integration tests for the API
     - [x] Implement the API
-- [x] View and search for products
-    - [x] Write unit tests for the controller
-    - [x] Implement the controller
-    - [x] Write integration tests for the API
-    - [x] Implement the API
+- [ ] Checkout and pay for products in the cart
+    - [ ] Write unit tests for the controller
+    - [ ] Create stripe account
+    - [ ] Add stripe configuration to the project (including env variables)
+    - [ ] Implement the create-checkout-url controller    
+    - [ ] Write integration tests for the API
+    - [ ] Implement the API
