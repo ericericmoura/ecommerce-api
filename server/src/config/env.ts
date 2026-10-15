@@ -19,6 +19,8 @@ const envSchema = z.object({
     JWT_ISSUER: z.string("No JWT Issuer was found"),
 
     LOGIN_TOKEN_EXPIRATION: z.string().default("15m"),
+
+    STRIPE_SECRET_KEY: z.string(),
 })
 
 const env = envSchema.safeParse(rawEnv);
