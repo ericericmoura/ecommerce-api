@@ -74,6 +74,7 @@ Here is a rough list of requirements for this project:
     - [x] Write unit tests for the controller
     - [x] Create stripe account
     - [x] Add stripe configuration to the project (including env variables)
-    - [ ] Implement the create-checkout-url controller    
-    - [ ] Write integration tests for the API
-    - [ ] Implement the API
+    - [x] Implement the create-checkout-url controller    
+    - [x] Write integration tests for the API
+    - [x] Implement the API
+    - [ ] Add webhooks to update the product's stock when a checkout is successfull    
