@@ -21,6 +21,7 @@ const envSchema = z.object({
     LOGIN_TOKEN_EXPIRATION: z.string().default("15m"),
 
     STRIPE_SECRET_KEY: z.string(),
+    SERVER_URL: z.url(),
 })
 
 const env = envSchema.safeParse(rawEnv);
