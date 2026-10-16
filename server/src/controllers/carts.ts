@@ -96,6 +96,9 @@ export const createCheckoutSessionController = async (
 
     var line_items: Stripe.Checkout.SessionCreateParams.LineItem[] = [];
     for (const cart of carts) {
+        if (!cart.product.isActive) {
+            return next(createHttpError(400, `The product with id '${cart.product.id}' is inactive.`));
+        }
         if (cart.product.stock === 0) {
             return next(createHttpError(400, `The product with id '${cart.product.id}' is out of stock.`));
         }
