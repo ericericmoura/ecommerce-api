@@ -1,9 +1,10 @@
 import request, { Test } from "supertest";
+
 import { app } from "@/app.js";
 import { mockFindUniqueUser } from "@root/tests/mocks/userMocks.js";
-import { mockFindUniqueProduct } from "@root/tests/mocks/productMocks.js";
+import { createMockProducts, mockFindUniqueProduct } from "@root/tests/mocks/productMocks.js";
 import { prismaMock } from "@/config/prismaMock.js";
-import { mockCreateCart, mockFindUniqueCart } from "@root/tests/mocks/cartMocks.js";
+import { mockCreateCart, mockFindManyCart, mockFindUniqueCart } from "@root/tests/mocks/cartMocks.js";
 import { Roles } from "@root/prisma/generated/prisma/enums.js";
 import { generateToken } from "@/utils/generateToken.js";
 import { Prisma } from "@root/prisma/generated/prisma/client.js";
@@ -108,6 +109,33 @@ describe("Carts API", () => {
 
             const req = request(app)
                 .delete(`/api/v1/cart/${cartId}`)
+                .auth(token, { type: "bearer" })
+                .expect(expectedCode)
+            if (expectedCode !== 204) {
+                req.expect("Content-Type", /json/);
+            }
+            return req;
+        }
+    })
+
+    describe("GET /create-checkout-session", () => {
+        test("rejects non-logged user with 401", async () => {
+            await makeRequest(401);
+        });
+
+        test("correctly generates url with 200", async () => {
+            mockFindUniqueUser();
+            mockFindManyCart(createMockProducts());
+
+            await makeRequest(200);
+        });
+
+        const makeRequest = (expectedCode: number): Test => {
+            const payload = { id: 1, role: Roles.USER };
+            const token = generateToken(payload, "5m");
+
+            const req = request(app)
+                .get(`/api/v1/cart/create-checkout-session`)
                 .auth(token, { type: "bearer" })
                 .expect(expectedCode)
             if (expectedCode !== 204) {
