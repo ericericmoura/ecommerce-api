@@ -71,9 +71,9 @@ Here is a rough list of requirements for this project:
     - [x] Write integration tests for the API
     - [x] Implement the API
 - [ ] Checkout and pay for products in the cart
-    - [ ] Write unit tests for the controller
-    - [ ] Create stripe account
-    - [ ] Add stripe configuration to the project (including env variables)
+    - [x] Write unit tests for the controller
+    - [x] Create stripe account
+    - [x] Add stripe configuration to the project (including env variables)
     - [ ] Implement the create-checkout-url controller    
     - [ ] Write integration tests for the API
     - [ ] Implement the API
