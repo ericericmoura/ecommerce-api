@@ -12,8 +12,8 @@ const router = express.Router();
 
 router
     .get("/create-checkout-session", authenticate(Roles.USER), createCheckoutSessionController)
-    .get("/success", (req: Request, res: Response) => res.json({ message: "Your purchase was successfull!" }))
-    .get("/cancel", (req: Request, res: Response) => res.json({ message: "Your purchase was successfull!" }))
+    .get("/success", (req: Request, res: Response) => { res.status(200).json({ message: "Your purchase was successfull!" }) })
+    .get("/cancel", (req: Request, res: Response) => res.status(200).json({ message: "Your purchase was canceled!" }))
     .post("/", authenticate(Roles.USER), validate({ body: AddToCartBodySchema }), addToCartController)
     .delete("/:id", authenticate(Roles.USER), removeFromCartController);
 

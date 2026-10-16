@@ -10,7 +10,6 @@ import createHttpError from "http-errors";
 import type { Stripe } from "stripe";
 
 export interface AddToCartBody {
-    userId: number,
     productId: number,
     amount: number,
 }
@@ -109,7 +108,7 @@ export const createCheckoutSessionController = async (
             quantity: cart.amount,
             price_data: {
                 currency: "BRL",
-                unit_amount: decimalToCents(Decimal(cart.product.price.toNumber() * cart.amount)),
+                unit_amount: decimalToCents(cart.product.price),
                 product_data: {
                     name: cart.product.name
                 }
@@ -120,8 +119,8 @@ export const createCheckoutSessionController = async (
     const session = await stripe.checkout.sessions.create({
         mode: 'payment',
         ui_mode: 'hosted_page',
-        success_url: `${env.SERVER_URL}/api/v1/cart/success`,
-        cancel_url: `${env.SERVER_URL}/api/v1/cart/cancel`,
+        success_url: `${env.SERVER_URL}/cart/success`,
+        cancel_url: `${env.SERVER_URL}/cart/cancel`,
         line_items,
         billing_address_collection: 'auto',
         name_collection: {
