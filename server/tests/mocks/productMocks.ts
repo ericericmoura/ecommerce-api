@@ -32,7 +32,7 @@ export const createMockProducts = (productsBody: CreateProductBodyOptional[] = [
             id,
             name: item.name ?? "RandomProduct",
             tags: item.tags ?? "RandomTag1,RandomTag2",
-            stock: item.stock ?? 1,
+            stock: item.stock ?? 2,
             price: item.price ?? Decimal(1),
             isActive: true,
             createdAt: new Date(),

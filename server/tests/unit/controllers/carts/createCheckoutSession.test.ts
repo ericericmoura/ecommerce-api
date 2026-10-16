@@ -2,8 +2,9 @@ import httpMocks from "node-mocks-http"
 
 import { Roles } from "@root/prisma/generated/prisma/enums.js";
 import { createCheckoutSessionController } from "@/controllers/carts.js";
-import { mockFindUniqueUser } from "@root/tests/mocks/userMocks.js";
 import stripe from "@/config/stripe.js";
+import { createMockProducts } from "@root/tests/mocks/productMocks.js";
+import { mockFindManyCart } from "@root/tests/mocks/cartMocks.js";
 
 describe("Create checkout session", () => {
     var next = jest.fn();
@@ -17,8 +18,6 @@ describe("Create checkout session", () => {
     test("rejects empty cart with 400", async () => {
         const req = createCheckoutUrlRequest();
 
-        mockFindUniqueUser();
-
         await createCheckoutSessionController(req, res, next);
 
         expectRejection();
@@ -27,15 +26,26 @@ describe("Create checkout session", () => {
     test("rejects unnavailable or out of stock products with 400", async () => {
         const req = createCheckoutUrlRequest();
 
-        mockFindUniqueUser();
-        
+        mockFindManyCart(createMockProducts(), 1, true);
 
         await createCheckoutSessionController(req, res, next);
 
         expectRejection();
     });
 
-    test.todo("correctly generates url with 200");
+    test("correctly generates url with 200", async () => {
+        const req = createCheckoutUrlRequest();
+
+        mockFindManyCart(createMockProducts());
+
+        await createCheckoutSessionController(req, res, next);
+
+        expect(stripe.checkout.sessions.create).toHaveBeenCalled();
+        expect(res.statusCode).toBe(200);
+
+        const redirectUrl = res._getJSONData().redirectUrl;
+        expect(redirectUrl).toBeDefined();
+    });
 
     // TEST HELPERS
 
