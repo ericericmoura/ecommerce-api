@@ -81,6 +81,15 @@ export const createCheckoutSessionController = async (
         return next(createHttpError(422, "Invalid user ID."));
     }
 
+    const user = await prisma.user.findUnique({ where: { id } });
+    if (!user) {
+        return next(createHttpError(422, "Invalid user ID."));
+    }
+
+    if (!user.confirmedEmail) {
+        return next(createHttpError(403, "You must confirm your e-mail address before buying."));
+    }
+
     const carts = await prisma.cart.findMany({
         where: { userId: id },
         include: {
@@ -88,8 +97,7 @@ export const createCheckoutSessionController = async (
         }
     });
 
-    if (carts === undefined || carts.length === 0)
-    {
+    if (carts === undefined || carts.length === 0) {
         return next(createHttpError(400, "Cannot buy an empty cart!"));
     }
 
@@ -123,6 +131,7 @@ export const createCheckoutSessionController = async (
         cancel_url: `${env.SERVER_URL}/cart/cancel`,
         line_items,
         billing_address_collection: 'auto',
+        customer_email: user.email,
         name_collection: {
             individual: {
                 enabled: true,
@@ -145,16 +154,14 @@ export const checkoutCompletedController = async (
     res: Response,
     next: NextFunction
 ) => {
-    try {    
+    try {
         const sig = req.headers['stripe-signature'];
-        if (sig === undefined)
-        {
+        if (sig === undefined) {
             return next(createHttpError(400, "No stripe signature header provided"));
         }
         const event = stripe.webhooks.constructEvent(req.body, sig, env.STRIPE_WEBHOOK_SIGNING_SECRET);
 
-        if (event.type == "checkout.session.completed")
-        {
+        if (event.type == "checkout.session.completed") {
             const lineItems = await stripe.checkout.sessions.listLineItems(
                 event.data.object.id,
             );
@@ -164,7 +171,7 @@ export const checkoutCompletedController = async (
         }
         res.sendStatus(501);
     } catch (error) {
-        console.log("Error handling webhook event: ", error);    
+        console.log("Error handling webhook event: ", error);
         res.sendStatus(400);
     }
 }
