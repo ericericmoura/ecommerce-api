@@ -25,6 +25,7 @@ model User {
   createdAt      DateTime @default(now()) @map("created_at")
 
   carts Cart[]
+  purchases Purchase[]
 }
 
 model Product {
@@ -38,6 +39,7 @@ model Product {
   createdAt DateTime @default(now()) @map("created_at")
 
   carts Cart[]
+  purchases Purchase[]
 }
 
 model Cart {
@@ -51,4 +53,18 @@ model Cart {
   createdAt DateTime @default(now()) @map("created_at")
 
   @@unique([userId, productId])
+}
+
+model Purchase {
+  id        Int      @id @default(autoincrement()) @map("id")
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+  productId Int
+  product   Product  @relation(fields: [productId], references: [id])
+  amount    Int      @default(1) @map("amount")
+  pricePerUnit Decimal @map("price_per_unit") @db.Decimal(12, 2)
+  updatedAt DateTime @updatedAt @map("updated_at")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@unique([userId, productId, pricePerUnit])
 }
