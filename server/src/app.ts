@@ -2,7 +2,6 @@ import createHttpError from 'http-errors';
 import express from 'express';
 import cookieParser from 'cookie-parser';
 import logger from 'morgan';
-import "express-async-errors"
 
 import apiV1Router from '@/routes/apiV1.js';
 import "@/middlewares/zodErrorHandler.js"
@@ -12,7 +11,14 @@ export const app = express();
 
 // Middlewares
 app.use(logger('dev'));
-app.use(express.json());
+app.use((req, res, next) => {
+    console.log("Original URL: ", req.originalUrl);
+    
+    if (req.originalUrl === '/api/v1/cart/checkout-completed') {
+        return next();
+    }
+    express.json()(req, res, next);
+});
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 

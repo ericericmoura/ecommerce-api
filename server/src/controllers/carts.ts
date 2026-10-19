@@ -139,3 +139,32 @@ export const createCheckoutSessionController = async (
     }
     res.status(200).json({ redirectUrl: session.url });
 }
+
+export const checkoutCompletedController = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    try {    
+        const sig = req.headers['stripe-signature'];
+        if (sig === undefined)
+        {
+            return next(createHttpError(400, "No stripe signature header provided"));
+        }
+        const event = stripe.webhooks.constructEvent(req.body, sig, env.STRIPE_WEBHOOK_SIGNING_SECRET);
+
+        if (event.type == "checkout.session.completed")
+        {
+            const lineItems = await stripe.checkout.sessions.listLineItems(
+                event.data.object.id,
+            );
+
+            console.log("Line Items: ", lineItems);
+            console.log("Payment Status: ", event.data.object.payment_status);
+        }
+        res.sendStatus(501);
+    } catch (error) {
+        console.log("Error handling webhook event: ", error);    
+        res.sendStatus(400);
+    }
+}
