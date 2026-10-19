@@ -1,13 +1,13 @@
 import { prisma } from "@/config/database.js";
 import stripe from "@/config/stripe.js";
 import { IdSchema } from "@/schemas/general.js";
-import { decimalToCents } from "@/utils/decimalToCents.js";
-import { Decimal } from "@prisma/client/runtime/client.js";
+import { centsToDecimal, decimalToCents } from "@/utils/decimalToCents.js";
 import env from "@/config/env.js"
 
 import { type Request, type Response, type NextFunction } from "express"
 import createHttpError from "http-errors";
 import type { Stripe } from "stripe";
+import type { PurchaseCreateManyInput } from "@root/prisma/generated/prisma/models/Purchase";
 
 export interface AddToCartBody {
     productId: number,
@@ -120,7 +120,10 @@ export const createCheckoutSessionController = async (
                 product_data: {
                     name: cart.product.name
                 }
-            }
+            },
+            metadata: {
+                id: cart.productId
+            },
         })
     }
 
@@ -161,15 +164,70 @@ export const checkoutCompletedController = async (
         }
         const event = stripe.webhooks.constructEvent(req.body, sig, env.STRIPE_WEBHOOK_SIGNING_SECRET);
 
-        if (event.type == "checkout.session.completed") {
-            const lineItems = await stripe.checkout.sessions.listLineItems(
-                event.data.object.id,
-            );
+        if (event.type === "checkout.session.completed") {
+            if (event.data.object.customer_email === null) {
+                return next(createHttpError(400, "Costumer e-mail not provided."));
+            }
 
-            console.log("Line Items: ", lineItems);
-            console.log("Payment Status: ", event.data.object.payment_status);
+            const [lineItems, user] = await Promise.all([
+                stripe.checkout.sessions.listLineItems(
+                    event.data.object.id,
+                    { limit: 100 }
+                ),
+                prisma.user.findUnique({ where: { email: event.data.object.customer_email } }),
+            ]);
+
+            if (!user) {
+                return next(createHttpError(404, "No user with the provided e-mail."));
+            }
+
+            const carts = await prisma.cart.findMany({ where: { userId: user.id } });
+            if (carts.length === 0) {
+                return res.sendStatus(200);
+            }
+
+            const lineItemByProductId = new Map<number, Stripe.LineItem>();
+            for (const li of lineItems.data) {
+                const id = li.metadata?.["id"];
+                if (id === undefined) {
+                    return next(createHttpError(422, "Invalid request, one or more line items are missing metadata fields."));
+                }
+                lineItemByProductId.set(Number(id), li);
+            }
+
+            for (const cart of carts) {
+                if (!lineItemByProductId.has(cart.productId)) {
+                    return next(createHttpError(422, "Request missing one or more items from the cart."));
+                }
+            }
+
+            const purchases: PurchaseCreateManyInput[] = [];
+            for (const cart of carts) {
+                const item = lineItemByProductId.get(cart.productId);
+                if (!item) {
+                    return next(createHttpError(422, "Request missing one or more items from the cart."));
+                }
+                purchases.push(
+                    {
+                        userId: user.id,
+                        productId: cart.productId,
+                        amount: cart.amount,
+                        pricePerUnit: centsToDecimal(item.amount_total / (item.quantity ?? 1)),
+                    }
+                );
+            }
+
+            await prisma.$transaction([
+                prisma.purchase.createMany({
+                    data: purchases,
+                }),
+                prisma.cart.deleteMany({ where: { id: { in: carts.map(c => c.id) } } }),
+                ...carts.map(c =>
+                    prisma.product.update({ where: { id: c.productId }, data: { stock: { decrement: c.amount } } })
+                ),
+            ]);
         }
-        res.sendStatus(501);
+        res.sendStatus(200);
     } catch (error) {
         console.log("Error handling webhook event: ", error);
         res.sendStatus(400);
