@@ -22,6 +22,7 @@ const envSchema = z.object({
 
     STRIPE_SECRET_KEY: z.string(),
     SERVER_URL: z.url(),
+    WEBHOOK_SIGNING_SECRET: z.string(),
 })
 
 const env = envSchema.safeParse(rawEnv);
