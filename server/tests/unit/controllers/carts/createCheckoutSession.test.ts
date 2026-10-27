@@ -2,9 +2,9 @@ import httpMocks from "node-mocks-http"
 
 import { Roles } from "@root/prisma/generated/prisma/enums.js";
 import { createCheckoutSessionController } from "@/controllers/carts.js";
-import stripe from "@/config/stripe.js";
 import { createMockProducts } from "@root/tests/mocks/productMocks.js";
 import { mockFindManyCart } from "@root/tests/mocks/cartMocks.js";
+import { mockFindUniqueUser } from "@root/tests/mocks/userMocks.js";
 
 const mockCreate = jest.fn();
 
@@ -76,6 +76,7 @@ describe("Create checkout session", () => {
             method: "GET",
             baseUrl: "/create-checkout-session",
         });
+        mockFindUniqueUser();
         req.auth = { id: 1, role: Roles.USER };
         return req;
     }

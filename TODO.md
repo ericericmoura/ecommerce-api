@@ -78,3 +78,6 @@ Here is a rough list of requirements for this project:
     - [x] Write integration tests for the API
     - [x] Implement the API
     - [ ] Add webhooks to update the product's stock when a checkout is successfull    
+
+#### Refactoring
+- [ ] Use transactions instead of separate queries when ACID properties are needed.
